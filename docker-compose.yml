@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+    back:
+        build:
+            context: .
+        tty: true
+        restart: always
+        networks:
+            - core-network
+    mongo:
+        image: mongo:5.0.9
+        restart: always
+        volumes:
+            - ./DATA/mongo:/data/db
+        restart: unless-stopped
+        ports:
+            - 27217:27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        volumes:
+            - ./docker/mongo/mongod.conf:/etc/mongod.conf
+        entrypoint: ["mongod", "--auth", "--config", "/etc/mongod.conf"]
+        networks:
+            - core-network
+networks:
+    core-network:
+        external: true
